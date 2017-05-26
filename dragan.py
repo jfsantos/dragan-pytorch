@@ -11,7 +11,7 @@ import torch
 from torch.autograd import Variable, grad
 from torch.nn.init import xavier_normal
 from torchvision import datasets, transforms
-
+import torchvision.utils as vutils
 
 def xavier_init(model):
     for param in model.parameters():
@@ -27,22 +27,20 @@ if __name__ == '__main__':
     z_dim = 100
     h_dim = 128
     y_dim = 784
-    max_epochs = 100
+    max_epochs = 1000
     lambda_ = 10
 
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('../data', train=True, download=True,
                        transform=transforms.Compose([
-                           transforms.ToTensor(),
-                           transforms.Normalize((0.1307,), (0.3081,))
+                           transforms.ToTensor()
                        ])),
-        batch_size=batch_size, shuffle=True)
+        batch_size=batch_size, shuffle=True, drop_last=True)
     test_loader = torch.utils.data.DataLoader(
         datasets.MNIST('../data', train=False, transform=transforms.Compose([
-                           transforms.ToTensor(),
-                           transforms.Normalize((0.1307,), (0.3081,))
+                           transforms.ToTensor()
                        ])),
-        batch_size=batch_size, shuffle=True)
+        batch_size=batch_size, shuffle=False, drop_last=True)
 
     generator = torch.nn.Sequential(torch.nn.Linear(z_dim, h_dim),
             torch.nn.Sigmoid(),
@@ -113,5 +111,12 @@ if __name__ == '__main__':
             print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f'
                   % (epoch, max_epochs, batch_idx, len(train_loader),
                      loss_d.data[0], loss_g.data[0]))
+
+            if batch_idx % 100 == 0:
+                vutils.save_image(data,
+                        'samples/real_samples.png')
+                fake = generator(z)
+                vutils.save_image(gen.data.view(batch_size, 1, 28, 28),
+                        'samples/fake_samples_epoch_%03d.png' % epoch)
 
 
