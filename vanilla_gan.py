@@ -25,7 +25,6 @@ if __name__ == '__main__':
     h_dim = 128
     y_dim = 784
     max_epochs = 1000
-    lambda_ = 10
 
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('../data', train=True, download=True,
@@ -82,16 +81,7 @@ if __name__ == '__main__':
             loss_d_fake = criterion(pred_fake, labels)
             loss_d_fake.backward()
 
-            # gradient penalty
-            alpha = torch.rand(batch_size, 1).expand(X.size())
-            x_hat = Variable(alpha * X.data + (1 - alpha) * (X.data + 0.5 * X.data.std() * torch.rand(batch_size, 1).expand(X.size())), requires_grad=True)
-            pred_hat = discriminator(x_hat)
-            gradients = grad(outputs=pred_hat, inputs=x_hat, grad_outputs=torch.ones(pred_hat.size()),
-                    create_graph=True, retain_graph=True, only_inputs=True)[0]
-            gradient_penalty = lambda_ * ((gradients.norm(2, dim=1) - 1) ** 2).mean()
-            gradient_penalty.backward()
-
-            loss_d = loss_d_real + loss_d_fake + gradient_penalty
+            loss_d = loss_d_real + loss_d_fake
             opt_d.step()
 
             # Update generator
@@ -110,9 +100,9 @@ if __name__ == '__main__':
 
             if batch_idx % 100 == 0:
                 vutils.save_image(data,
-                        'samples/real_samples.png')
+                        'samples_vanilla/real_samples.png')
                 fake = generator(z)
                 vutils.save_image(gen.data.view(batch_size, 1, 28, 28),
-                        'samples/fake_samples_epoch_%03d.png' % epoch)
+                        'samples_vanilla/fake_samples_epoch_%03d.png' % epoch)
 
 
