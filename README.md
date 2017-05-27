@@ -5,4 +5,4 @@ Code based on the [original implementation](https://github.com/kodalinaveen3/DRA
 
 The following repositories were also used as a reference on how to implement the gradient penalty in PyTorch:
 - https://github.com/t-vi/pytorch-tvmisc
-- https://github.com/t-vi/pytorch-tvmisc
+- https://github.com/caogang/wgan-gp
