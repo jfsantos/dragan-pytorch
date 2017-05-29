@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
             # gradient penalty
             alpha = torch.rand(batch_size, 1).expand(X.size())
-            x_hat = Variable(alpha * X.data + (1 - alpha) * (X.data + 0.5 * X.data.std() * torch.rand(batch_size, 1).expand(X.size())), requires_grad=True)
+            x_hat = Variable(alpha * X.data + (1 - alpha) * (X.data + 0.5 * X.data.std() * torch.rand(X.size())), requires_grad=True)
             pred_hat = discriminator(x_hat)
             gradients = grad(outputs=pred_hat, inputs=x_hat, grad_outputs=torch.ones(pred_hat.size()),
                     create_graph=True, retain_graph=True, only_inputs=True)[0]
